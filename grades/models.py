@@ -44,7 +44,7 @@ class UserGrades(models.Model):
         Signup, on_delete=models.CASCADE, related_name="approved_by")
 
     def __str__(self):
-        return self.reviewer
+        return self.user.name
 
     class Meta:
         unique_together = [['user', 'department', 'semester', 'subject']]

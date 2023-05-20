@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from signup.views import signup_view, login_view, admin_list
-from grades.views import department_list, semester_list, subject_list, user_grades_create
+from grades.views import department_list, semester_list, subject_list, user_grades_create, get_students_by_reviewer, get_user_grades
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,7 +30,8 @@ urlpatterns = [
     path('api/grades/', user_grades_create, name='user-grades-create'),
     path('api/department/<int:department_id>/semester/<int:semester_id>/subjects/',
          subject_list, name='subject-list'),
-
-
-
+    path('api/students/<int:reviewer_id>/', get_students_by_reviewer,
+         name='get_students_by_reviewer'),
+    path('api/student_grades/<int:user_id>/', get_user_grades,
+         name='get_user_grades')
 ]

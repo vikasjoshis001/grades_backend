@@ -1,3 +1,6 @@
+from django.views.decorators.http import require_GET
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from rest_framework.decorators import api_view
@@ -52,9 +55,60 @@ def user_grades_create(request):
             subject_id=subject_id,
             defaults={
                 'grades': grade,
-                'reviewer': reviewer_id
+                'reviewer_id': reviewer_id
             }
         )
         user_grades_list.append(user_grade)
 
     return Response({'message': 'User grades created/updated successfully.'}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+def get_students_by_reviewer(request, reviewer_id):
+    # Retrieve the UserGrades objects for the given reviewer_id
+    user_grades = UserGrades.objects.filter(
+        reviewer_id=reviewer_id)
+    print(user_grades)
+
+    # Create the payload using Signup and UserGrades data
+    students = []
+    for user_grade in user_grades:
+        print(user_grade)
+        student = {
+            'id': user_grade.user.id,
+            'name': user_grade.user.name,
+            'reg_no': user_grade.user.reg_no
+        }
+        students.append(student)
+
+    payload = {'students': students}
+
+    return Response(payload)
+
+
+@require_GET
+def get_user_grades(request, user_id):
+    user = get_object_or_404(Signup, id=user_id)
+
+    payload = {
+        "user_name": user.name,
+        "department": user.department,
+        "grades": {}
+    }
+
+    user_grades = UserGrades.objects.filter(user=user)
+
+    for grade in user_grades:
+        semester_name = grade.semester.name
+        subject_name = grade.subject.name
+        grade_value = grade.grades
+
+        if semester_name not in payload["grades"]:
+            payload["grades"][semester_name] = []
+
+        payload["grades"][semester_name].append({
+            "subject": subject_name,
+            "grades": grade_value
+        })
+
+    return JsonResponse(payload)
