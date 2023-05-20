@@ -16,8 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from . import settings
+
+
 from signup.views import signup_view, login_view, admin_list
-from grades.views import department_list, semester_list, subject_list, user_grades_create, get_students_by_reviewer, get_user_grades
+from grades.views import department_list, semester_list, subject_list, user_grades_create, get_students_by_reviewer, get_user_grades, generate_pdf
+
+from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,5 +39,10 @@ urlpatterns = [
     path('api/students/<int:reviewer_id>/', get_students_by_reviewer,
          name='get_students_by_reviewer'),
     path('api/student_grades/<int:user_id>/', get_user_grades,
-         name='get_user_grades')
+         name='get_user_grades'),
+    path('api/pdf/', generate_pdf,
+         name='generate_pdf')
 ]
+
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

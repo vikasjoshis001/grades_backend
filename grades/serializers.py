@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Departments, Semesters, Subjects, UserGrades
+from .models import Departments, Semesters, Subjects, UserGrades, SavePdf
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -23,4 +23,10 @@ class SubjectSerializer(serializers.ModelSerializer):
 class UserGradesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserGrades
+        fields = '__all__'
+
+
+class SavePdfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavePdf
         fields = '__all__'

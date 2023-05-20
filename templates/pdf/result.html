@@ -1,0 +1,162 @@
+{% autoescape off %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+  <meta charset="utf-8">
+  <style>
+    p {
+      display: inline;
+    }
+
+    span {
+      padding: 2px;
+      margin: 2px;
+      font-size: 14px;
+      text-decoration: bold;
+    }
+
+    h3 {
+      padding: 0px;
+      margin: 0px;
+      font-size: 14px;
+      text-decoration: bold;
+    }
+
+    /* .heading {
+
+            text-align: center;
+            font-size: 18px;
+            margin:0px;
+        } */
+
+    .quizName {
+
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .right {
+      display: block;
+      text-align: right;
+      font-size: 11px;
+
+    }
+
+    #logo {
+      border-radius: 50%;
+      /* float: left; */
+      width: 100px;
+      height: 100px;
+
+    }
+
+    hr {
+      margin: 10px 0;
+    }
+
+    h2 {
+      font-size: 16px;
+    }
+
+    #gradify_title {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 40px;
+      position: absolute;
+      top: -10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <img src="{{ logo }}" id="logo" align="left">
+    <h1 id="gradify_title">
+      <center>Gradify</center>
+    </h1>
+    {% if semister == "SEM 1" %}
+    <h1> Roll No. : {{name}}</h1>
+    {% else %}
+    <h1> Name : {{name}}</h1>
+    {% endif %}
+    <div>
+      <h1> Branch : B. Tech. ({{branch}})</h1>
+    </div>
+    <h1 class='pdfName'>Year :- {{ year }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Semester :-
+      {{semister}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Registration Number :- {{registration_number}}</h1>
+  </div>
+  <hr>
+
+  <div>
+    <span align="justify" style="font-size: 12px"><b> Subject
+        &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Grade
+        &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Credits
+      </b></span>
+    <hr>
+    <br>
+
+    {% for i in results %}
+
+    <table>
+      <tr>
+        <td><b>{{ i.subject }}</b></td>
+        <td><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+
+            <!-- {{i.grade}} -->
+            {% if i.grade == "ABS" or i.grade == "F" or i.grade == "AF" %}
+            <b style="color:red;">{{ i.grade }}</b>
+            {% else %}
+            <b>{{ i.grade }}</b>
+            {% endif %}
+          </b>
+        </td>
+        <!-- <td><b>{{ i.credits }}</b></td> -->
+      </tr>
+    </table>
+    </ol>
+    <br>
+
+    {% endfor %}
+  </div>
+  <div>
+    <hr>
+    <p style="font-size:12px;">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
+      &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+      &nbsp; &nbsp; &nbsp; &nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
+      &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+      &nbsp; &nbsp; &nbsp; &nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SGPA :- {{sgpa}}</b></p>
+  </div>
+  <div style="position: relative; width: 600px; height: 800px;">
+
+    <div style="position: absolute; bottom: 5px;color:red">
+      <b>(Note :- **This is an unofficial result )</b>
+    </div>
+  </div>
+</body>
+
+</html>
+{% endautoescape %}

@@ -1,14 +1,24 @@
-from django.views.decorators.http import require_GET
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
 from django.shortcuts import render
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Departments, Semesters, Subjects, UserGrades
+from .models import Departments, Semesters, Subjects, UserGrades, SavePdf
 from signup.models import Signup
-from .serializers import DepartmentSerializer, SemesterSerializer, SubjectSerializer, UserGradesSerializer
+from .serializers import DepartmentSerializer, SemesterSerializer, SubjectSerializer, SavePdfSerializer
+
+# PDF
+from .utils import render_to_pdf
+from io import BytesIO
+from django.core.files import File
+from PyPDF2 import PdfFileReader, PdfFileWriter
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from datetime import datetime
+
+# Email
+from django.core.mail import EmailMessage
+
 # Create your views here.
 
 
@@ -86,29 +96,107 @@ def get_students_by_reviewer(request, reviewer_id):
     return Response(payload)
 
 
-@require_GET
+@api_view(['GET'])
 def get_user_grades(request, user_id):
-    user = get_object_or_404(Signup, id=user_id)
+    try:
+        user = Signup.objects.get(id=user_id)
+    except Signup.DoesNotExist:
+        return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-    payload = {
-        "user_name": user.name,
-        "department": user.department,
-        "grades": {}
-    }
-
+    # Retrieve UserGrades objects for the given user_id
     user_grades = UserGrades.objects.filter(user=user)
 
-    for grade in user_grades:
-        semester_name = grade.semester.name
-        subject_name = grade.subject.name
-        grade_value = grade.grades
+    # Create the payload using UserGrades, Subjects, and related data
+    grades = []
+    for user_grade in user_grades:
+        grade = {
+            'semeter': user_grade.semester.name,
+            'subject': user_grade.subject.name,
+            'grades': user_grade.grades
+        }
+        grades.append(grade)
 
-        if semester_name not in payload["grades"]:
-            payload["grades"][semester_name] = []
+    payload = {
+        'user_name': user.name,
+        'department': user.department,
+        'grades': grades
+    }
 
-        payload["grades"][semester_name].append({
-            "subject": subject_name,
-            "grades": grade_value
-        })
+    return Response(payload)
 
-    return JsonResponse(payload)
+
+@api_view(['POST'])
+def generate_pdf(request, user_id):
+    user_id = request.data.get('user_id')
+
+    temp_list = [
+        {
+            "subject": "OS",
+            "grade": "A+"
+        },
+        {
+            "subject": "OS",
+            "grade": "A+"
+        }
+    ]
+    user_result = {}
+    user_result['name'] = "Vikas"
+    user_result['registration_number'] = "2019BCS140"
+    user_result['branch'] = "CSE"
+    user_result['course'] = "SEM1"
+    user_result['results'] = temp_list
+
+    #  Creating Pdf
+    try:
+        # Generating Pdf
+        pdf = render_to_pdf('pdf/result.html', user_result)
+        my_filename = "Hello.pdf"
+        dic = {
+            "filename": my_filename
+        }
+
+        # Saving filename
+        serializers = SavePdfSerializer(data=dic)
+        if (serializers.is_valid()):
+            serializers.save()
+        my_pdf = SavePdf.objects.filter(filename=my_filename)[0]
+        output_file = PdfFileWriter()
+        input_file = PdfFileReader(File(BytesIO(pdf.content)))
+
+        # Adding Page no, website name and greetings in file
+        for page in range(input_file.getNumPages()):
+            tmp = BytesIO()
+            can = canvas.Canvas(tmp, pagesize=A4)
+            can.setFont('Times-Roman', 10)
+            can.drawString(25, 20, "gradify | devMonks")
+            can.drawString(250, 20, "***Congratulations***")
+            can.drawString(525, 20, "Page " + str(page + 1))
+            can.save()
+            tmp.seek(0)
+            watermark = PdfFileReader(tmp)
+            watermark_page = watermark.getPage(0)
+            pdf_page = input_file.getPage(page)
+            pdf_page.mergePage(watermark_page)
+            output_file.addPage(pdf_page)
+        tmp = BytesIO()
+        output_file.write(tmp)
+
+        # Saving Pdf
+        my_pdf.pdf_file.save(my_filename, File(tmp))
+        my_pdf = SavePdf.objects.filter(filename=my_filename)[0]
+        serializer = SavePdfSerializer(my_pdf)
+        user_result['pdf'] = serializer.data['pdf_file']
+        dic = {
+            "Type": "Success",
+            "msg": "Pdf genereted successfully",
+            "data": user_result
+        }
+        return Response(data=dic)
+    except Exception as e:
+        dic = {
+            "Type": "Error",
+            "msg": "Unable to Create pdf",
+            "data": None
+            # "error": /e
+        }
+        return Response(data=dic)

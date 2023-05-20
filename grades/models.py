@@ -2,6 +2,12 @@ from django.db import models
 
 from signup.models import Signup
 
+from django.conf import settings
+
+from django.core.files.storage import FileSystemStorage
+
+import os
+
 
 class Departments(models.Model):
     id = models.AutoField(primary_key=True)
@@ -48,3 +54,19 @@ class UserGrades(models.Model):
 
     class Meta:
         unique_together = [['user', 'department', 'semester', 'subject']]
+
+
+class SavePdf(models.Model):
+    filename = models.CharField(max_length=120)
+    pdf_file = models.FileField(upload_to='pdfs/', null=True, blank=True)
+
+
+class OverwriteStorage(FileSystemStorage):
+    def get_available_name(self, name):
+        if self.exists(name):
+            os.remove(os.path.join(settings.MEDIA_ROOT, name))
+        return name
+
+
+class ResultFiles(models.Model):
+    xlsx_files = models.FileField(storage=OverwriteStorage())
