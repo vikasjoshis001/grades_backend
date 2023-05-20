@@ -36,6 +36,7 @@ def login_view(request):
 
     response_data = {
         'id': user.id,
+        'status': user.status,
         'username': user.email,
         'message': 'Login successful.'
     }
