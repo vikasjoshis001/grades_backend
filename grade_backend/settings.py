@@ -138,7 +138,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'crunchbase.io@gmail.com'
-EMAIL_HOST_PASSWORD = 'CrunchBase@04041608'
+EMAIL_HOST_PASSWORD = 'ivrk kdfw rgsz lgub'
+
+DEFAULT_FROM_EMAIL = 'crunchbase.io@gmail.com'  # Your Gmail email address
+
 
 # Time Zone
 LANGUAGE_CODE = 'en-us'

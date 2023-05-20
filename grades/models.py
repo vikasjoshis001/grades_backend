@@ -49,9 +49,6 @@ class UserGrades(models.Model):
     reviewer = models.ForeignKey(
         Signup, on_delete=models.CASCADE, related_name="approved_by")
 
-    def __str__(self):
-        return self.user.name
-
     class Meta:
         unique_together = [['user', 'department', 'semester', 'subject']]
 
@@ -59,6 +56,9 @@ class UserGrades(models.Model):
 class SavePdf(models.Model):
     filename = models.CharField(max_length=120)
     pdf_file = models.FileField(upload_to='pdfs/', null=True, blank=True)
+
+    def __str__(self):
+        return self.filename
 
 
 class OverwriteStorage(FileSystemStorage):
