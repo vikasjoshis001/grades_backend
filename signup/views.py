@@ -42,3 +42,10 @@ def login_view(request):
 
     # Authentication successful
     return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def admin_list(request):
+    admins = Signup.objects.filter(status='admin')
+    serializer = SignupSerializer(admins, many=True)
+    return Response(serializer.data)

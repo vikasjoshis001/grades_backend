@@ -16,17 +16,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from signup.views import signup_view, login_view
-from grades.views import department_list, semester_list, subject_list
+from signup.views import signup_view, login_view, admin_list
+from grades.views import department_list, semester_list, subject_list, user_grades_create
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/signup/', signup_view,
          name='signup_view'),
     path('api/login/', login_view, name='login-view'),
+    path('api/admins/', admin_list, name='admin_list'),
     path('api/departments/', department_list, name='department-list'),
     path('api/semesters/', semester_list, name='semester-list'),
-    path('api/department/<int:department_id>/semester/<int:semester_id>/subjects/', subject_list, name='subject-list'),
+    path('api/grades/', user_grades_create, name='user-grades-create'),
+    path('api/department/<int:department_id>/semester/<int:semester_id>/subjects/',
+         subject_list, name='subject-list'),
 
 
 
