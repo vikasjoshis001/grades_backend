@@ -110,7 +110,8 @@ def get_user_grades(request, user_id):
     grades = []
     for user_grade in user_grades:
         grade = {
-            'semeter': user_grade.semester.name,
+            'id': user_grade.subject.id,
+            'semester': user_grade.semester.name,
             'subject': user_grade.subject.name,
             'grades': user_grade.grades
         }
@@ -125,35 +126,41 @@ def get_user_grades(request, user_id):
     return Response(payload)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def generate_pdf(request, user_id):
-    user_id = request.data.get('user_id')
+    # user_id = request.data.get('user_id')
 
-    temp_list = [
-        {
-            "subject": "OS",
-            "grade": "A+"
-        },
-        {
-            "subject": "OS",
-            "grade": "A+"
+    user = Signup.objects.get(id=user_id)
+    user_grades = UserGrades.objects.filter(user_id=user_id)
+
+    grades = []
+    for user_grade in user_grades:
+        grade = {
+            'id': user_grade.subject.id,
+            'semester': user_grade.semester.name,
+            'subject': user_grade.subject.name,
+            'grades': user_grade.grades
         }
-    ]
-    user_result = {}
-    user_result['name'] = "Vikas"
-    user_result['registration_number'] = "2019BCS140"
-    user_result['branch'] = "CSE"
-    user_result['course'] = "SEM1"
-    user_result['results'] = temp_list
+        grades.append(grade)
 
-    #  Creating Pdf
+    data = {
+        'name': user.name,
+        'registration_number': user.reg_no,
+        'branch': user.department,
+        'course': user.course,
+        'results': grades
+    }
+
+    print(data)
+
     try:
         # Generating Pdf
-        pdf = render_to_pdf('pdf/result.html', user_result)
+        pdf = render_to_pdf('pdf/result.html', data)
         my_filename = "Hello.pdf"
         dic = {
             "filename": my_filename
         }
+        print("PDF GENERATED")
 
         # Saving filename
         serializers = SavePdfSerializer(data=dic)

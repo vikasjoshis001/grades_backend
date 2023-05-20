@@ -40,7 +40,7 @@ urlpatterns = [
          name='get_students_by_reviewer'),
     path('api/student_grades/<int:user_id>/', get_user_grades,
          name='get_user_grades'),
-    path('api/pdf/', generate_pdf,
+    path('api/pdf/<int:user_id>/', generate_pdf,
          name='generate_pdf')
 ]
 
