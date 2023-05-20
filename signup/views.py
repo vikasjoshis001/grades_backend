@@ -20,6 +20,7 @@ def signup_view(request):
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
+
 @api_view(['POST'])
 def login_view(request):
     username = request.data.get('username')
@@ -33,5 +34,11 @@ def login_view(request):
     if not check_password(password, user.password):
         return Response({'message': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+    response_data = {
+        'id': user.id,
+        'username': user.email,
+        'message': 'Login successful.'
+    }
+
     # Authentication successful
-    return Response({'message': 'Login successful.'}, status=status.HTTP_200_OK)
+    return Response(response_data, status=status.HTTP_200_OK)
