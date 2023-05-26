@@ -99,17 +99,21 @@ def user_grades_create(request):
 def get_students_by_reviewer(request, reviewer_id):
     # Retrieve the UserGrades objects for the given reviewer_id
     user_grades = UserGrades.objects.filter(
-        reviewer_id=reviewer_id)
+        reviewer_id=reviewer_id).select_related('user')
+
+    unique_reg_nos = set(ug.user.reg_no for ug in user_grades)
+
     print(user_grades)
 
     # Create the payload using Signup and UserGrades data
     students = []
-    for user_grade in user_grades:
+    for reg_no in unique_reg_nos:
+        user_grade = user_grades.filter(user__reg_no=reg_no).first()
         print(user_grade)
         student = {
             'id': user_grade.user.id,
             'name': user_grade.user.name,
-            'reg_no': user_grade.user.reg_no
+            'reg_no': reg_no
         }
         students.append(student)
 
